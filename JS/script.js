@@ -16,6 +16,10 @@ const asanas = [
     img: "https://github.com/user-attachments/assets/b9d81c85-250d-43db-880c-68b2aba9d6c2",
   },
   {
+    name: "Vajmuthrasanam",
+    img: "https://github.com/user-attachments/assets/b0caaeb5-be97-4455-9b95-018bd3059844",
+  },
+  {
     name: "jaanusiraasanam Left",
     img: "https://github.com/user-attachments/assets/bdedd1d4-2ce8-4916-9235-f6edd1962509",
   },
