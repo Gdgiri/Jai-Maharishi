@@ -64,6 +64,7 @@ const timerDisplayEl = document.getElementById("timerDisplay");
 const startBtn = document.getElementById("startBtn");
 
 let wakeLock = null;
+const tickSound = new Audio("timmer.mp3"); // Ensure you have this sound file
 
 async function requestWakeLock() {
   try {
@@ -100,6 +101,8 @@ function speakText(text) {
   speechSynthesis.speak(utterance);
 }
 
+const noRestAsanas = ["jaanusiraasanam Left", "Artha machendra left"]; // Asanas without rest
+
 function startTimer() {
   interval = setInterval(() => {
     timerDisplayEl.textContent = timer;
@@ -114,23 +117,51 @@ function startTimer() {
         if (currentIndex < asanas.length) {
           timer = 20;
           isResting = false;
+          stopTickSound(); // Stop the ticking sound when rest ends
           updateUI();
           startTimer();
         } else {
           endSession();
         }
       } else {
-        // Rest phase
-        speakText("Jai Maharishi. Please rest for 30 seconds.");
-        timerDisplayEl.textContent = "Jai Maharishi, please rest!";
-        asanaNameEl.textContent = "Rest Phase";
-        asanaImageEl.style.display = "none"; // Hide the image during rest
-        timer = 30;
-        isResting = true;
-        startTimer();
+        const currentAsana = asanas[currentIndex];
+
+        // Check if the current asana is in the noRestAsanas array
+        if (noRestAsanas.includes(currentAsana.name)) {
+          // Skip rest for this asana and go to next asana directly
+          currentIndex++;
+          if (currentIndex < asanas.length) {
+            timer = 20;
+            updateUI();
+            startTimer();
+          } else {
+            endSession();
+          }
+        } else {
+          // Rest phase
+          speakText("Jai Maharishi. Please rest for 30 seconds.");
+          timerDisplayEl.textContent = "Jai Maharishi, please rest!";
+          asanaNameEl.textContent = "Rest Phase";
+          asanaImageEl.style.display = "none"; // Hide the image during rest
+          timer = 30;
+          isResting = true;
+          startTickSound(); // Start the ticking sound during rest
+          startTimer();
+        }
       }
     }
   }, 1000);
+}
+
+function startTickSound() {
+  tickSound.loop = true; // Loop the sound
+  tickSound.play();
+}
+
+function stopTickSound() {
+  tickSound.loop = false; // Stop the loop
+  tickSound.pause();
+  tickSound.currentTime = 0; // Reset the sound
 }
 
 function endSession() {
@@ -138,6 +169,7 @@ function endSession() {
   asanaNameEl.textContent = "Session Complete!";
   timerDisplayEl.textContent = "";
   asanaImageEl.style.display = "none";
+  stopTickSound(); // Stop the ticking sound when session ends
   speakText("Session complete. Well done!");
 }
 
